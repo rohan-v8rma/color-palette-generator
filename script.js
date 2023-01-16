@@ -58,11 +58,22 @@ async function changePalette() {
     */
 
     //? Till this point, the function code is executed asynchronously; and synchronously after. So, the function execution stops until the response of the `fetch` method is obtained.
-    await fetch(`https://www.thecolorapi.com/scheme?hex=${paletteInspiration}&mode=analogic&count=${numberOfBoxes}`, {
-        method: 'GET'
-    })
-    .then(response => response.json()) // Parsing the response of the GET request as JSON
-    .then(data => colorApiJsonResponse = data); // Passing the JSON response to `assignPalette` function
+
+    try {
+        await fetch(`https://www.thecolorapi.com/scheme?hex=${paletteInspiration}&mode=analogic&count=${numberOfBoxes}`, {
+            method: 'GET'
+        })
+        .then(response => response.json()) // Parsing the response of the GET request as JSON
+        .then(data => colorApiJsonResponse = data); // Passing the JSON response to `assignPalette` function
+    }
+    catch(e) {
+        
+        // If call to the API fails, we generate all colors using the random function.
+        for(let index = 0; index < numberOfBoxes; index++) {
+            colorApiJsonResponse.colors[index].hex.value = generateHexCode();
+        }
+        
+    }
 
     let div;
     let fontColor;
