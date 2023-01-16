@@ -45,33 +45,25 @@ let isBoxColorLocked = Array(numberOfBoxes).fill(false);
 // 0 indicates a particular box is NOT color locked. 
 // 1 indicates a particular box is color locked. 
 
-function changePallette() {
-    let palletteInspiration;
-        
-    // let colorApiJsonResponse;
-
-    palletteInspiration = generateHexCode().slice(1, 7);
+function changePalette() {
+    const paletteInspiration = generateHexCode().slice(1, 7);
 
     /*
-    Fetching the color scheme using the color api. 
+    Fetching the color scheme using the color api: https://www.thecolorapi.com/ 
     
-    - The `hex` query parameter specifies the "seed color" that the pallette is based on.
+    - The `hex` query parameter specifies the "seed color" that the palette is based on.
     - The `mode` query parameter defines the mode to be used to generate the scheme from the "seed color".
     - The `count` query parameter defines the number of colors required in the color scheme that is returned.
     */
 
-    fetch(`https://www.thecolorapi.com/scheme?hex=${palletteInspiration}&mode=analogic&count=${numberOfBoxes}`, {
-        method: 'GET',
-        cache: 'reload',
-        headers: {
-            'Cache-Control': 'no-cache',
-            'pragma': 'no-cache'
-        }})
+    fetch(`https://www.thecolorapi.com/scheme?hex=${paletteInspiration}&mode=analogic&count=${numberOfBoxes}`, {
+        method: 'GET'
+    })
     .then(response => response.json()) // Parsing the response of the GET request as JSON
-    .then(colorApiJsonResponse => assignPallette(colorApiJsonResponse)); // Passing the JSON response to `assignPallette` function
+    .then(colorApiJsonResponse => assignPalette(colorApiJsonResponse)); // Passing the JSON response to `assignPalette` function
 }
 
-function assignPallette(colorApiJsonResponse) {
+function assignPalette(colorApiJsonResponse) {
     let div;
     let fontColor;
     let hexAssign;
@@ -126,18 +118,18 @@ function assignPallette(colorApiJsonResponse) {
 }
 
 
-changePallette();
+changePalette();
 
 document.addEventListener("keydown", function(event) {
     if( event.key = " " ) {
         console.log("Space bar pressed.");
-        changePallette();
+        changePalette();
     }
 })
 
 // Reload button for mobile devices
 const reloadButton = document.querySelector(".reload");
-reloadButton.addEventListener("click", changePallette);
+reloadButton.addEventListener("click", changePalette);
 
 // for-loop for adding event listeners for copy-button clicks. The event is handled by writing the hex-code of the visible color to the user's clipboard.
 
