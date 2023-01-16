@@ -45,7 +45,7 @@ let isBoxColorLocked = Array(numberOfBoxes).fill(false);
 // 0 indicates a particular box is NOT color locked. 
 // 1 indicates a particular box is color locked. 
 
-function palletteChange() {
+function changePallette() {
     let palletteInspiration;
         
     // let colorApiJsonResponse;
@@ -68,79 +68,76 @@ function palletteChange() {
             'pragma': 'no-cache'
         }})
     .then(response => response.json()) // Parsing the response of the GET request as JSON
-    .then(colorApiJsonResponse => {
-        // colorApiJsonResponse = data; // Storing the JSON response in a variable.
-        // console.log(colorApiJsonResponse.colors[0].hex.value)
-        let div;
-        let fontColor;
-        let hexAssign;
-
-        for(let boxIndex = 1; boxIndex <= numberOfBoxes; boxIndex++) {
-            
-            if(isBoxColorLocked[boxIndex - 1]) {
-                continue;
-            }
-
-            hexAssign = colorApiJsonResponse.colors[boxIndex - 1].hex.value;
-            
-            div = document.getElementById("color-box-" + boxIndex);
-
-            // Changing the background color of the color-box
-            div.style.backgroundColor = hexAssign;
-
-            div = document.getElementById("hex-" + boxIndex);
-
-            // Changing the hex code displayed on the color-box
-            div.textContent = hexAssign.slice(1, 7); // Removing the hash using slicing
-
-            /*
-            ! NOTE that if we tried to change the textContent of id 'color-box-X' directly, the whole 'color-hex-code' div Node would be removed and a simple hex-code would be inserted in its place. 
-            
-            This would remove its chosen font, the margin/padding applied to the internal div, etc.
-
-            ? This is because if we set the textContent property of a particular element, all child text nodes are replaced by only one new text node.
-            */
-            
-            // TODO : Can steps be reduced here
-            if(testDarkness(hexAssign)) {
-                fontColor = "white";
-            }
-            else {
-                fontColor = "black";
-            }      
-
-            div = document.getElementById("color-box-" + boxIndex);
-            div.style.color = fontColor;
-
-
-            //* We have to change colors separately for the icons, because font properties of text inside buttons is independent of the font colors outside
-
-            div = document.getElementById("lock-" + boxIndex);
-            div.style.color = fontColor;
-
-            div = document.getElementById("copy-" + boxIndex);
-            div.style.color = fontColor;
-
-        };
-
-
-    })
-
-    
+    .then(colorApiJsonResponse => assignPallette(colorApiJsonResponse)); // Passing the JSON response to `assignPallette` function
 }
 
-palletteChange();
+function assignPallette(colorApiJsonResponse) {
+    let div;
+    let fontColor;
+    let hexAssign;
+
+    for(let boxIndex = 1; boxIndex <= numberOfBoxes; boxIndex++) {
+        
+        if(isBoxColorLocked[boxIndex - 1]) {
+            continue;
+        }
+
+        hexAssign = colorApiJsonResponse.colors[boxIndex - 1].hex.value;
+        
+        div = document.getElementById("color-box-" + boxIndex);
+
+        // Changing the background color of the color-box
+        div.style.backgroundColor = hexAssign;
+
+        div = document.getElementById("hex-" + boxIndex);
+
+        // Changing the hex code displayed on the color-box
+        div.textContent = hexAssign.slice(1, 7); // Removing the hash using slicing
+
+        /*
+        ! NOTE that if we tried to change the textContent of id 'color-box-X' directly, the whole 'color-hex-code' div Node would be removed and a simple hex-code would be inserted in its place. 
+        
+        This would remove its chosen font, the margin/padding applied to the internal div, etc.
+
+        ? This is because if we set the textContent property of a particular element, all child text nodes are replaced by only one new text node.
+        */
+        
+        // TODO : Can steps be reduced here
+        if(testDarkness(hexAssign)) {
+            fontColor = "white";
+        }
+        else {
+            fontColor = "black";
+        }      
+
+        div = document.getElementById("color-box-" + boxIndex);
+        div.style.color = fontColor;
+
+
+        //* We have to change colors separately for the icons, because font properties of text inside buttons is independent of the font colors outside
+
+        div = document.getElementById("lock-" + boxIndex);
+        div.style.color = fontColor;
+
+        div = document.getElementById("copy-" + boxIndex);
+        div.style.color = fontColor;
+
+    };
+}
+
+
+changePallette();
 
 document.addEventListener("keydown", function(event) {
     if( event.key = " " ) {
         console.log("Space bar pressed.");
-        palletteChange();
+        changePallette();
     }
 })
 
 // Reload button for mobile devices
 const reloadButton = document.querySelector(".reload");
-reloadButton.addEventListener("click", palletteChange);
+reloadButton.addEventListener("click", changePallette);
 
 // for-loop for adding event listeners for copy-button clicks. The event is handled by writing the hex-code of the visible color to the user's clipboard.
 
