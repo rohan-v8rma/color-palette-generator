@@ -20,28 +20,6 @@ function generateHexCode() { // This function returns a string like "#287EDF" wh
     return hexCode;
 }
 
-// function invertHexCode(hexCode) {
-//     let invertedHexCode = "#";
-//     let invertedDigit;
-  
-//     for(let digit = 1; digit <= 6; digit++) {
-//         if ( ( 65 <= hexCode.charCodeAt(digit) ) && ( hexCode.charCodeAt(digit) <= 70 ) ) {
-//             invertedDigit = 15 - ( (hexCode[digit]).charCodeAt(0) - 65 + 10 );
-//         }
-//         else {
-//             invertedDigit = 15 - parseInt(hexCode[digit]);
-            
-//             if (invertedDigit >= 10) {
-//               invertedDigit = String.fromCharCode(invertedDigit + 65 - 10);
-//             };          
-//         }
-  
-//         invertedHexCode += invertedDigit;
-  
-//     }
-//     return invertedHexCode;
-//   }
-
 // Function for checking whether the color is too dark for black text to be visible.
 function testDarkness(hexCode) {
     let sum = 0;
@@ -67,61 +45,88 @@ let isBoxColorLocked = Array(numberOfBoxes).fill(false);
 // 0 indicates a particular box is NOT color locked. 
 // 1 indicates a particular box is color locked. 
 
-
 function palletteChange() {
-    let hexAssign;
-    let div;
-    let fontColor;    
-
-    for(let boxIndex = 1; boxIndex <= numberOfBoxes; boxIndex++) {
+    let palletteInspiration;
         
-        if(isBoxColorLocked[boxIndex - 1]) {
-            continue;
-        }
+    // let colorApiJsonResponse;
 
-        hexAssign = generateHexCode();
-        
-        // fontColor = invertHexCode(hexAssign);
-        
-        div = document.getElementById("color-box-" + boxIndex);
+    palletteInspiration = generateHexCode().slice(1, 7);
 
-        // Changing the background color of the color-box
-        div.style.backgroundColor = hexAssign;
+    /*
+    Fetching the color scheme using the color api. 
+    
+    - The `hex` query parameter specifies the "seed color" that the pallette is based on.
+    - The `mode` query parameter defines the mode to be used to generate the scheme from the "seed color".
+    - The `count` query parameter defines the number of colors required in the color scheme that is returned.
+    */
 
-        div = document.getElementById("hex-" + boxIndex);
+    fetch(`https://www.thecolorapi.com/scheme?hex=${palletteInspiration}&mode=analogic&count=${numberOfBoxes}`, {
+        method: 'GET',
+        cache: 'reload',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'pragma': 'no-cache'
+        }})
+    .then(response => response.json()) // Parsing the response of the GET request as JSON
+    .then(colorApiJsonResponse => {
+        // colorApiJsonResponse = data; // Storing the JSON response in a variable.
+        // console.log(colorApiJsonResponse.colors[0].hex.value)
+        let div;
+        let fontColor;
+        let hexAssign;
 
-        // Changing the hex code displayed on the color-box
-        div.textContent = hexAssign.slice(1, 7); // Removing the hash using slicing
+        for(let boxIndex = 1; boxIndex <= numberOfBoxes; boxIndex++) {
+            
+            if(isBoxColorLocked[boxIndex - 1]) {
+                continue;
+            }
 
-        /*
-        ! NOTE that if we tried to change the textContent of id 'color-box-X' directly, the whole 'color-hex-code' div Node would be removed and a simple hex-code would be inserted in its place. 
-        
-        This would remove its chosen font, the margin/padding applied to the internal div, etc.
+            hexAssign = colorApiJsonResponse.colors[boxIndex - 1].hex.value;
+            
+            div = document.getElementById("color-box-" + boxIndex);
 
-        ? This is because if we set the textContent property of a particular element, all child text nodes are replaced by only one new text node.
-        */
-        
-        // TODO : Can steps be reduced here
-        if(testDarkness(hexAssign)) {
-            fontColor = "white";
-        }
-        else {
-            fontColor = "black";
-        }      
+            // Changing the background color of the color-box
+            div.style.backgroundColor = hexAssign;
 
-        div = document.getElementById("color-box-" + boxIndex);
-        div.style.color = fontColor;
+            div = document.getElementById("hex-" + boxIndex);
+
+            // Changing the hex code displayed on the color-box
+            div.textContent = hexAssign.slice(1, 7); // Removing the hash using slicing
+
+            /*
+            ! NOTE that if we tried to change the textContent of id 'color-box-X' directly, the whole 'color-hex-code' div Node would be removed and a simple hex-code would be inserted in its place. 
+            
+            This would remove its chosen font, the margin/padding applied to the internal div, etc.
+
+            ? This is because if we set the textContent property of a particular element, all child text nodes are replaced by only one new text node.
+            */
+            
+            // TODO : Can steps be reduced here
+            if(testDarkness(hexAssign)) {
+                fontColor = "white";
+            }
+            else {
+                fontColor = "black";
+            }      
+
+            div = document.getElementById("color-box-" + boxIndex);
+            div.style.color = fontColor;
 
 
-        //* We have to change colors separately for the icons, because font properties of text inside buttons is independent of the font colors outside
+            //* We have to change colors separately for the icons, because font properties of text inside buttons is independent of the font colors outside
 
-        div = document.getElementById("lock-" + boxIndex);
-        div.style.color = fontColor;
+            div = document.getElementById("lock-" + boxIndex);
+            div.style.color = fontColor;
 
-        div = document.getElementById("copy-" + boxIndex);
-        div.style.color = fontColor;
+            div = document.getElementById("copy-" + boxIndex);
+            div.style.color = fontColor;
 
-    };
+        };
+
+
+    })
+
+    
 }
 
 palletteChange();
