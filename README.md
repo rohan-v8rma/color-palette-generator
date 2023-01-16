@@ -1,10 +1,12 @@
-# Tasks
+# About
 
-1. Adding more color divs
+Credits to https://www.thecolorapi.com/, for the color API used in this project.
 
+# TODO
 
-# Completed
-
-1. ~~Removing focus from lock buttons after click (only working on button 5)~~
-2. ~~Keeping lock buttons visible when color box is kept STATIC but visible on hover when color box is NOT kept STATIC~~
-3. ~~Create popups upon clicking the buttons~~
+- [x] Removing focus from lock buttons after click (only working on button 5).
+- [x] Keeping lock buttons visible when color box is kept STATIC but visible on hover when color box is NOT kept STATIC.
+- [x] Create popups upon clicking the buttons.
+- [x] Use a color API for obtaining aesthetically pleasing color palettes.
+- [ ] Use/make an artificially intelligent color API.
+- [ ] Dynamically adding more color divs.
