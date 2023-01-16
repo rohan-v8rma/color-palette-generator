@@ -45,8 +45,9 @@ let isBoxColorLocked = Array(numberOfBoxes).fill(false);
 // 0 indicates a particular box is NOT color locked. 
 // 1 indicates a particular box is color locked. 
 
-function changePalette() {
+async function changePalette() {
     const paletteInspiration = generateHexCode().slice(1, 7);
+    let colorApiJsonResponse;
 
     /*
     Fetching the color scheme using the color api: https://www.thecolorapi.com/ 
@@ -56,14 +57,13 @@ function changePalette() {
     - The `count` query parameter defines the number of colors required in the color scheme that is returned.
     */
 
-    fetch(`https://www.thecolorapi.com/scheme?hex=${paletteInspiration}&mode=analogic&count=${numberOfBoxes}`, {
+    //? Till this point, the function code is executed asynchronously; and synchronously after. So, the function execution stops until the response of the `fetch` method is obtained.
+    await fetch(`https://www.thecolorapi.com/scheme?hex=${paletteInspiration}&mode=analogic&count=${numberOfBoxes}`, {
         method: 'GET'
     })
     .then(response => response.json()) // Parsing the response of the GET request as JSON
-    .then(colorApiJsonResponse => assignPalette(colorApiJsonResponse)); // Passing the JSON response to `assignPalette` function
-}
+    .then(data => colorApiJsonResponse = data); // Passing the JSON response to `assignPalette` function
 
-function assignPalette(colorApiJsonResponse) {
     let div;
     let fontColor;
     let hexAssign;
@@ -115,10 +115,10 @@ function assignPalette(colorApiJsonResponse) {
         div.style.color = fontColor;
 
     };
+
 }
 
-
-changePalette();
+ changePalette();
 
 document.addEventListener("keydown", function(event) {
     if( event.key = " " ) {
