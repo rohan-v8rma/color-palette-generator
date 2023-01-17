@@ -40,6 +40,45 @@ function testDarkness(hexCode) {
         return 1; 
     }
 }
+ 
+// Testing darkness based using the concept of relative brightness/value: https://design.tutsplus.com/articles/the-5-problems-with-fundamental-color-theory--cms-31477
+// We use the fact that red is 30% bright, green is 59% bright and blue is 11% bright. They all combine to make white light which is 100% bright. This all is in relative terms.
+function testDarknessUsingValue(hexCode) {
+    
+    let brightness = 0;
+
+    for(let color = 0; color < 3; color++) {
+
+        let colorSum = 0;
+
+        // Adding up the values of a particular color
+        for(let digit = (2 * color + 1); digit <= (2 * color + 2); digit++) {
+            if ( ( 65 <= hexCode.charCodeAt(digit) ) && ( hexCode.charCodeAt(digit) <= 70 ) ) {
+                colorSum += ( 16 ** (digit % 2) ) * ( hexCode[digit].charCodeAt(0) - 65 + 10 );
+            }
+            else {
+                colorSum += ( 16 ** (digit % 2) ) *  parseInt(hexCode[digit]);
+            }
+        }
+
+        if(color == 0) { // Red
+            brightness += (colorSum * 0.3) / 255;
+        }
+        else if(color == 1) { // Green
+            brightness += (colorSum * 0.59) / 255;
+        }
+        else { // Blue
+            brightness += (colorSum * 0.11) / 255;
+        }
+    }
+
+    if(brightness > 0.5) {
+        return 0;
+    }
+    else {
+        return 1; 
+    }
+}
 
 let isBoxColorLocked = Array(numberOfBoxes).fill(false); 
 // 0 indicates a particular box is NOT color locked. 
@@ -106,7 +145,7 @@ async function changePalette() {
         */
         
         // TODO : Can steps be reduced here
-        if(testDarkness(hexAssign)) {
+        if(testDarknessUsingValue(hexAssign)) {
             fontColor = "white";
         }
         else {
